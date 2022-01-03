@@ -22,11 +22,11 @@ jobs:
       #   env:
       #     COMMITS: ${{ toJson(github.event.commits) }}
       #   run: echo "$COMMITS"
-      - name: print env variable
+      # - name: print env variable
         # env:
         #   COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
-        run: echo We use env variable $COMMIT_NOT_CONTAINS_SKIP_STRING
+        # if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
+        # run: echo We use env variable $COMMIT_NOT_CONTAINS_SKIP_STRING
       - name: joined commit message
         env:
           CHECKED_JOINED_COMMIT_MESSAGE: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
@@ -35,37 +35,36 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      # - name: npm install
-      #   run: npm install
-      # - name: lint
-      #   run: npm run eslint
-      # - name: build
-      #   run: npm run build
-      # - name: test
-      #   run: npm run test
-      # - name: e2e tests
-      #   uses: cypress-io/github-action@v2
-      #   with:
-      #     command: npm run test:e2e
-      #     start: npm run start-prod
-      #     wait-on: http://localhost:5000
-      # - uses: actions/checkout@v2
-      # - name: Bump version and push tag
-      #   uses: anothrNick/github-tag-action@1.33.0
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     DEFAULT_BUMP: patch
-      #     DRY_RUN: true
-      #     COMMIT_CONTAINS_SKIP_STRING: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
-      #   if: ${{ github.event_name == 'push' && !env.COMMIT_CONTAINS_SKIP_STRING }}
-      # - name: heroku deploy
-      #   uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
-        
-      #   if: ${{ github.event_name == 'push' && !env.COMMIT_CONTAINS_SKIP_STRING }}
-      #   with:
-      #     heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-      #     heroku_app_name: pokedex-app-openstack #Must be unique in Heroku
-      #     heroku_email: santiagobn1@gmail.com
-      #     healthcheck: "https://pokedex-app-openstack.herokuapp.com/health"
-      #     checkstring: "ok"
-      #     rollbackonhealthcheckfailed: true
+      - name: npm install
+        run: npm install
+      - name: lint
+        run: npm run eslint
+      - name: build
+        run: npm run build
+      - name: test
+        run: npm run test
+      - name: e2e tests
+        uses: cypress-io/github-action@v2
+        with:
+          command: npm run test:e2e
+          start: npm run start-prod
+          wait-on: http://localhost:5000
+      - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        uses: anothrNick/github-tag-action@1.33.0
+        if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch
+          DRY_RUN: true
+          COMMIT_CONTAINS_SKIP_STRING: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
+      - name: heroku deploy
+        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: pokedex-app-openstack #Must be unique in Heroku
+          heroku_email: santiagobn1@gmail.com
+          healthcheck: "https://pokedex-app-openstack.herokuapp.com/health"
+          checkstring: "ok"
+          rollbackonhealthcheckfailed: true
