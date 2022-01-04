@@ -73,6 +73,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: custom
+          fields: took
           custom_payload: |
             {
               attachments: [{
@@ -85,5 +86,5 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-          COMMIT_AUTHOR: ${{ github.event.commits[0].author.name }}
+          COMMIT_AUTHOR: ${{ github.event.commits[github.event.commits.length-1].author.name }}
         if: ${{ github.event_name == 'push' && job.status  == 'success' }}
