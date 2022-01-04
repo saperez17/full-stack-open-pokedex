@@ -97,4 +97,4 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
           COMMIT_AUTHOR: ${{ github.event.commits[github.event.commits.length-1].author.name }}
-        if: ${{ job.status  != 'failure' }}
+        if: ${{ job.status  == 'failure' }}
