@@ -68,3 +68,19 @@ jobs:
           healthcheck: "https://pokedex-app-openstack.herokuapp.com/health"
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
+      - name: Sucess notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              attachments: [{
+                "author_name": "8398a7@action-slack",
+                "text": `A new version deployed to https://pokedex-app-openstack.herokuapp.com (${process.env.AS_COMMIT}) by ${process.env.AS_AUTHOR} ${{ job.status }} build took ${process.env.AS_TOOK}`,
+                "color": "good",
+              }]
+            }
+          channel: '#notifications'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: ${{ github.event_name == 'push' && job.status  == 'success' }}
