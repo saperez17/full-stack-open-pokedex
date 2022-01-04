@@ -43,32 +43,32 @@ jobs:
         run: npm run build
       - name: test
         run: npm run test
-      - name: e2e tests
-        uses: cypress-io/github-action@v2
-        with:
-          command: npm run test:e2e
-          start: npm run start-prod
-          wait-on: http://localhost:5000
-        if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
-      - uses: actions/checkout@v2
-      - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.33.0
-        if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEFAULT_BUMP: patch
-          # DRY_RUN: true
-          COMMIT_CONTAINS_SKIP_STRING: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
-      - name: heroku deploy
-        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
-        if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: pokedex-app-openstack #Must be unique in Heroku
-          heroku_email: santiagobn1@gmail.com
-          healthcheck: "https://pokedex-app-openstack.herokuapp.com/health"
-          checkstring: "ok"
-          rollbackonhealthcheckfailed: true
+      # - name: e2e tests
+      #   uses: cypress-io/github-action@v2
+      #   with:
+      #     command: npm run test:e2e
+      #     start: npm run start-prod
+      #     wait-on: http://localhost:5000
+      #   if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
+      # - uses: actions/checkout@v2
+      # - name: Bump version and push tag
+      #   uses: anothrNick/github-tag-action@1.33.0
+      #   if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     DEFAULT_BUMP: patch
+      #     # DRY_RUN: true
+      #     COMMIT_CONTAINS_SKIP_STRING: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
+      # - name: heroku deploy
+      #   uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      #   if: ${{ github.event_name == 'push' && env.COMMIT_NOT_CONTAINS_SKIP_STRING }}
+      #   with:
+      #     heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+      #     heroku_app_name: pokedex-app-openstack #Must be unique in Heroku
+      #     heroku_email: santiagobn1@gmail.com
+      #     healthcheck: "https://pokedex-app-openstack.herokuapp.com/health"
+      #     checkstring: "ok"
+      #     rollbackonhealthcheckfailed: true
       - name: Sucess notification
         uses: 8398a7/action-slack@v3
         with:
@@ -77,7 +77,7 @@ jobs:
             {
               attachments: [{
                 "author_name": "8398a7@action-slack",
-                "text": `A new version deployed to https://pokedex-app-openstack.herokuapp.com (${process.env.AS_COMMIT}) by ${process.env.AS_AUTHOR} ${{ job.status }} build took ${process.env.AS_TOOK}`,
+                "text": `A new version deployed to https://pokedex-app-openstack.herokuapp.com (${process.env.AS_COMMIT}) by ${env.COMMIT_AUTHOR} ${{ job.status }} build took ${process.env.AS_TOOK}`,
                 "color": "good",
               }]
             }
@@ -85,4 +85,5 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
+          COMMIT_AUTHOR: ${{ join(toJson(github.event.commits.*.author)) }}
         if: ${{ github.event_name == 'push' && job.status  == 'success' }}
