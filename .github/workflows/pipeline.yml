@@ -77,7 +77,7 @@ jobs:
             {
               attachments: [{
                 "author_name": "8398a7@action-slack",
-                "text": `A new version deployed to https://pokedex-app-openstack.herokuapp.com (${process.env.AS_COMMIT}) by ${env.COMMIT_AUTHOR} ${{ job.status }} build took ${process.env.AS_TOOK}`,
+                "text": `A new version deployed to https://pokedex-app-openstack.herokuapp.com (${process.env.AS_COMMIT}) by ${process.env.COMMIT_AUTHOR} ${{ job.status }} build took ${process.env.AS_TOOK}`,
                 "color": "good",
               }]
             }
@@ -85,5 +85,5 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-          COMMIT_AUTHOR: ${{ join(toJson(github.event.commits.*.author)) }}
+          COMMIT_AUTHOR: ${{ github.event.commits[0].author.name) }}
         if: ${{ github.event_name == 'push' && job.status  == 'success' }}
