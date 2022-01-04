@@ -92,9 +92,9 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest 
           channel: "#notifications"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
           COMMIT_AUTHOR: ${{ github.event.commits[github.event.commits.length-1].author.name }}
-        if: ${{ github.event_name == 'push' && job.status  != 'success' }}
+        if: ${{ github.event_name == 'push'  }}
