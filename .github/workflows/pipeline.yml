@@ -32,13 +32,13 @@ jobs:
           CHECKED_JOINED_COMMIT_MESSAGE: ${{ contains(join(toJson(github.event.commits.*.message)), '#skip') }}
         run: echo "$CHECKED_JOINED_COMMIT_MESSAGE"
       - uses: actions/checkout@v2
-      # - uses: actions/setup-node@v1
-      #   with:
-      #     node-version: '14.x'
-      # - name: npm install
-      #   run: npm install
-      # - name: lint
-      #   run: npm run eslint
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: npm install
+        run: npm install
+      - name: lint
+        run: npm run eslint
       # - name: build
       #   run: npm run build
       # - name: test
@@ -82,9 +82,19 @@ jobs:
                 "color": "good",
               }]
             }
-          channel: '#notifications'
+          channel: "#notifications"
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
           COMMIT_AUTHOR: ${{ github.event.commits[github.event.commits.length-1].author.name }}
         if: ${{ github.event_name == 'push' && job.status  == 'success' }}
+      - name: Failure notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
+          channel: "#notifications"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+          COMMIT_AUTHOR: ${{ github.event.commits[github.event.commits.length-1].author.name }}
+        if: ${{ github.event_name == 'push' && job.status  == 'failure' }}
