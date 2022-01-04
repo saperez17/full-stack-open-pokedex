@@ -38,7 +38,7 @@ const PokemonPage = ({ previous, next }) => {
         <div className="pokemon-info">
           <div className="pokemon-name">{pokemon.name}</div>
           <div className="pokemon-stats" data-testid="stats">
-            <table data-testid="pokemon-stats-tabl">
+            <table data-testid="pokemon-stats-table">
               <tbody>
                 {stats.map(({ name, value }) => (
                   <tr key={name} >
