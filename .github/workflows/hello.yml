@@ -18,3 +18,12 @@ jobs:
       - name: Current content
         run: |
           ls -l
+      - name: Sucess notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow,job,took,pullRequest # selectable (default: repo,message)
+          channel: '#notifications'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+        if: ${{ job.status  === 'success' }}
