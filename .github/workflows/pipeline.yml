@@ -85,5 +85,5 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
           MATRIX_CONTEXT: ${{ toJson(matrix) }} # required
-          COMMIT_AUTHOR: ${{ github.event.commits[0].author.name) }}
+          COMMIT_AUTHOR: ${{ github.event.commits[0].author.name }}
         if: ${{ github.event_name == 'push' && job.status  == 'success' }}
